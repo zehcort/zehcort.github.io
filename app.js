@@ -2,13 +2,14 @@ function mostrarEjercicios(tipo) {
   const contenido = document.getElementById("contenido");
 
   if (tipo === "virtual") {
-    contenido.innerHTML = `
-      <h2>Ejercicios Virtuales (Motricidad fina)</h2>
-      <p>Selecciona un tipo de juego para comenzar:</p>
-      <ul>
-        <li><button onclick="juego('camino')">🧠 Sigue el camino</button></li>
-      </ul>
-    `;
+  contenido.innerHTML = `
+    <h2>Ejercicios Virtuales (Motricidad fina)</h2>
+    <p>Selecciona un tipo de juego para comenzar:</p>
+    <ul>
+      <li><button onclick="juego('camino')">🧠 Sigue el camino</button></li>
+      <li><button onclick="juego('reaccion')">⚡ Reacción Rápida</button></li>
+    </ul>
+  `;
   } else if (tipo === "no-virtual") {
     contenido.innerHTML = `
       <h2>Ejercicios Físicos</h2>
@@ -98,6 +99,19 @@ function juego(tipo) {
       </div>
     `;
     iniciarJuegoCamino();
+  } else if (tipo === 'reaccion') {
+    const contenido = document.getElementById("contenido");
+    contenido.innerHTML = `
+      <div id="juegoReaccion">
+        <h2>⚡ Reacción Rápida</h2>
+        <p>Haz clic tan pronto como veas el cambio de color.</p>
+        <div id="pantallaReaccion" style="width:100%; height:300px; background-color:lightgray; margin-top:20px; display:flex; align-items:center; justify-content:center; font-size:1.5em; border-radius:10px; cursor:pointer;">
+          Presiona para comenzar
+        </div>
+        <button onclick="volverAlMenu()" style="margin-top:20px;">Volver al menú</button>
+      </div>
+    `;
+    iniciarReaccionContinua();
   }
 }
 
@@ -242,6 +256,58 @@ function iniciarJuegoCamino() {
   dibujarNivel(nivelActual);
   canvas.addEventListener("mousemove", manejarMovimiento);
   canvas.addEventListener("touchmove", manejarMovimiento, { passive: true });
+}
+
+let reaccionTimeout, esperando = false, tiempoInicio, juegoActivo = false;
+
+function iniciarReaccionContinua() {
+  const pantalla = document.getElementById("pantallaReaccion");
+  pantalla.style.backgroundColor = "lightgray";
+  pantalla.textContent = "Presiona para comenzar";
+  esperando = false;
+  juegoActivo = false;
+
+  pantalla.onclick = () => {
+    if (!esperando && !juegoActivo) {
+      juegoActivo = true;
+      comenzarCiclo();
+    } else if (esperando) {
+      const ahora = new Date().getTime();
+      const tiempoReaccion = ahora - tiempoInicio;
+
+      pantalla.textContent = `⏱️ ${tiempoReaccion} ms`;
+      pantalla.style.backgroundColor = "#2196F3"; // Azul
+
+      esperando = false;
+
+      setTimeout(() => {
+        comenzarCiclo();
+      }, 1000);
+    }
+  };
+}
+
+function comenzarCiclo() {
+  const pantalla = document.getElementById("pantallaReaccion");
+
+  // Cancelar timeout anterior si existe
+  if (reaccionTimeout) {
+    clearTimeout(reaccionTimeout);
+    reaccionTimeout = null;
+  }
+
+  pantalla.textContent = "Espera...";
+  pantalla.style.backgroundColor = "lightgray";
+  esperando = false;
+
+  const delay = Math.floor(Math.random() * 3000) + 2000;
+
+  reaccionTimeout = setTimeout(() => {
+    pantalla.style.backgroundColor = "#4CAF50";
+    pantalla.textContent = "¡Haz clic ahora!";
+    tiempoInicio = new Date().getTime();
+    esperando = true;
+  }, delay);
 }
 
 function volverAlMenu() {
