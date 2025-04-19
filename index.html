@@ -71,21 +71,33 @@
     #mensaje {
       font-weight: bold;
       margin-top: 10px;
-      color: red;
       text-align: center;
+    }
+
+    .mensaje-azul {
+      color: blue;
+    }
+
+    .mensaje-rojo {
+      color: red;
+    }
+
+    .mensaje-verde {
+      color: green;
+    }
+
+    .volver-btn {
+      margin-top: 20px;
+      background-color: #2196F3;
+    }
+
+    .volver-btn:hover {
+      background-color: #1976D2;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Ejercicios de Motricidad</h1>
-    <p>¿Cómo deseas practicar hoy?</p>
-    <div class="options">
-      <button onclick="mostrarEjercicios('virtual')">Ejercicios Virtuales</button>
-      <button onclick="mostrarEjercicios('no-virtual')">Ejercicios No Virtuales</button>
-    </div>
-
-    <div id="contenido"></div>
-  </div>
-
+  <div class="container" id="app"></div>
   <script src="app.js"></script>
+</body>
+</html>

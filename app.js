@@ -32,6 +32,7 @@ function juego(tipo) {
           <canvas id="caminoCanvas" width="360" height="500"></canvas>
         </div>
         <p id="mensaje"></p>
+        <button id="volverMenu" onclick="volverAlMenu()">Volver al menú</button>
       </div>
     `;
     iniciarJuegoCamino();
@@ -135,6 +136,7 @@ function iniciarJuegoCamino() {
       inicioAlcanzado = true;
       dentroDelCamino = true;
       mensaje.textContent = "¡Bien! Comenzaste correctamente.";
+      mensaje.style.color = "blue";
       return;
     }
 
@@ -180,4 +182,17 @@ function iniciarJuegoCamino() {
   canvas.addEventListener("touchmove", manejarMovimiento, { passive: true });
 }
 
+function volverAlMenu() {
+  const app = document.getElementById("app");
+  app.innerHTML = `
+    <h1>Ejercicios de Motricidad</h1>
+    <p>¿Cómo deseas practicar hoy?</p>
+    <div class="options">
+      <button onclick="mostrarEjercicios('virtual')">Ejercicios Virtuales</button>
+      <button onclick="mostrarEjercicios('no-virtual')">Ejercicios No Virtuales</button>
+    </div>
+    <div id="contenido"></div>
+  `;
+}
 
+document.addEventListener("DOMContentLoaded", volverAlMenu);
