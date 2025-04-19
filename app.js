@@ -3,20 +3,41 @@ function mostrarEjercicios(tipo) {
 
   if (tipo === "virtual") {
     contenido.innerHTML = `
-      <h2>Ejercicios Virtuales</h2>
+      <h2>Ejercicios Virtuales (Motricidad fina)</h2>
       <p>Selecciona un tipo de juego para comenzar:</p>
       <ul>
         <li><button onclick="juego('camino')">Sigue el camino</button></li>
       </ul>
     `;
-  } else {
+  } else if (tipo === "fisicos") {
     contenido.innerHTML = `
-      <h2>Ejercicios No Virtuales</h2>
+      <h2>Ejercicios Físicos</h2>
+      <div class="options">
+        <button onclick="mostrarEjerciciosFisicos('fina')">Motricidad Fina</button>
+        <button onclick="mostrarEjerciciosFisicos('gruesa')">Motricidad Gruesa</button>
+      </div>
+      <div id="subcontenido"></div>
+    `;
+  }
+}
+
+function mostrarEjerciciosFisicos(tipo) {
+  const subcontenido = document.getElementById("subcontenido");
+
+  if (tipo === "gruesa") {
+    subcontenido.innerHTML = `
+      <h3>Ejercicios de Motricidad Gruesa</h3>
+      <ul>
+        <li>🏃 Caminar en línea recta con los ojos cerrados</li>
+        <li>🦶 Saltar en un pie y luego en el otro</li>
+      </ul>
+    `;
+  } else if (tipo === "fina") {
+    subcontenido.innerHTML = `
+      <h3>Ejercicios de Motricidad Fina</h3>
       <ul>
         <li>🖐 Tocar cada dedo con el pulgar (mano derecha y luego izquierda)</li>
         <li>✏️ Trazar líneas con un lápiz entre dos puntos sin salirse</li>
-        <li>🏃 Caminar en línea recta con los ojos cerrados</li>
-        <li>🦶 Saltar en un pie y luego en el otro</li>
       </ul>
     `;
   }
@@ -188,8 +209,8 @@ function volverAlMenu() {
     <h1>Ejercicios de Motricidad</h1>
     <p>¿Cómo deseas practicar hoy?</p>
     <div class="options">
-      <button onclick="mostrarEjercicios('virtual')">Ejercicios Virtuales</button>
-      <button onclick="mostrarEjercicios('no-virtual')">Ejercicios No Virtuales</button>
+      <button onclick="mostrarEjercicios('virtual')">Ejercicios Virtuales (Motricidad fina)</button>
+      <button onclick="mostrarEjercicios('fisicos')">Ejercicios Físicos</button>
     </div>
     <div id="contenido"></div>
   `;
