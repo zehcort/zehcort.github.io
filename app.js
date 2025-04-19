@@ -6,22 +6,22 @@ function mostrarEjercicios(tipo) {
       <h2>Ejercicios Virtuales (Motricidad fina)</h2>
       <p>Selecciona un tipo de juego para comenzar:</p>
       <ul>
-        <li><button onclick="juego('camino')">Sigue el camino</button></li>
+        <li><button onclick="juego('camino')">🧠 Sigue el camino</button></li>
       </ul>
     `;
-  } else if (tipo === "fisicos") {
+  } else if (tipo === "no-virtual") {
     contenido.innerHTML = `
       <h2>Ejercicios Físicos</h2>
       <div class="options">
-        <button onclick="mostrarEjerciciosFisicos('fina')">Motricidad Fina</button>
-        <button onclick="mostrarEjerciciosFisicos('gruesa')">Motricidad Gruesa</button>
+        <button onclick="mostrarMotricidad('fina')">Motricidad Fina</button>
+        <button onclick="mostrarMotricidad('gruesa')">Motricidad Gruesa</button>
       </div>
       <div id="subcontenido"></div>
     `;
   }
 }
 
-function mostrarEjerciciosFisicos(tipo) {
+function mostrarMotricidad(tipo) {
   const subcontenido = document.getElementById("subcontenido");
 
   if (tipo === "gruesa") {
@@ -30,18 +30,59 @@ function mostrarEjerciciosFisicos(tipo) {
       <ul>
         <li>🏃 Caminar en línea recta con los ojos cerrados</li>
         <li>🦶 Saltar en un pie y luego en el otro</li>
+            <li>⚽ Atrapa y esquiva la pelota</li>
+        <li>📦 Levanta objetos del suelo</li>
+        <li>🚧 Esquiva obstáculos</li>
+        <li>🧘 Haz ejercicios de equilibrio</li>
+        <li>🧘‍♀️ Practica Yoga</li>
+        <li>🗃️ Apila cajas</li>
+        <li>🔁 Reincorpórate (siéntate y párate repetidamente)</li>
+        <li>💃 Baila</li>
+        <li>🏃 Corre</li>
+        <li>🏋️ Ve al gimnasio</li>
+        <li>🏅 Practica un deporte:</li>
+        <ul>
+          <li>🏊 Natación</li>
+          <li>⚽ Fútbol</li>
+          <li>🏀 Baloncesto</li>
+          <li>🏐 Voleibol</li>
+          <li>🏃‍♂️ Atletismo</li>
+          <li>🥋 Artes marciales</li>
+          <li>🎾 Tenis</li>
+          <li>🥎 Padel</li>
+          <li>🏈 Fútbol americano</li>
+          <li>🎯 Otros deportes</li>
+      </ul>
+    </ul>
       </ul>
     `;
   } else if (tipo === "fina") {
     subcontenido.innerHTML = `
       <h3>Ejercicios de Motricidad Fina</h3>
       <ul>
-        <li>🖐 Tocar cada dedo con el pulgar (mano derecha y luego izquierda)</li>
-        <li>✏️ Trazar líneas con un lápiz entre dos puntos sin salirse</li>
+        <li>🖐 Toca cada dedo con el pulgar (mano derecha y luego izquierda)</li>
+        <li>✏️ Traza líneas con un lápiz entre dos puntos sin salirse</li>
+        <li>📄 Realiza figuras en Origami</li>
+        <li>✂️ Recorta papel con tijeras en forma de tu figura favorita</li>
+        <li>🎨 Haz figuras con plastilina</li>
+        <li>🪡 Enhebra algunas agujas</li>
+        <li>🧊 Arma un cubo Rubik</li>
+        <li>🖍️ Pinta o colorea tu dibujo preferido</li>
+        <li>🫙 Haz figuras con arcilla</li>
+        <li>🧩 Arma un rompecabezas</li>
+        <li>🏗️ Juega Jenga</li>
+        <li>🖐️ Recoge objetos pequeños con tus manos en forma de pinza</li>
+        <li>🧱 Arma una estructura con bloques (como Lego)</li>
+        <li>🧁 Realiza un pastel o muffin de tu gusto</li>
+        <li>🌀 Juega Twister</li>
+        <li>🧠 Juega a encajar figuras en el orificio con su misma forma</li>
+        <li>🪙 Inserta botones en agujeros pequeños (como una alcancía)</li>
+        <li>🎲 Juega otros juegos de mesa</li>
       </ul>
     `;
   }
 }
+
 
 function juego(tipo) {
   if (tipo === 'camino') {
@@ -210,7 +251,7 @@ function volverAlMenu() {
     <p>¿Cómo deseas practicar hoy?</p>
     <div class="options">
       <button onclick="mostrarEjercicios('virtual')">Ejercicios Virtuales (Motricidad fina)</button>
-      <button onclick="mostrarEjercicios('fisicos')">Ejercicios Físicos</button>
+      <button onclick="mostrarEjercicios('no-virtual')">Ejercicios Físicos</button>
     </div>
     <div id="contenido"></div>
   `;
