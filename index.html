@@ -1,31 +1,91 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ejercicios de Motricidad</title>
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ejercicios de Motricidad</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      color: #333;
+    }
+
+    .container {
+      padding: 20px;
+      max-width: 500px;
+      margin: auto;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 15px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #contenido {
+      margin-top: 30px;
+      text-align: left;
+    }
+
+    #caminoContainer {
+      margin: 20px auto;
+      background: #fff;
+      border: 2px solid #333;
+      touch-action: none;
+    }
+
+    canvas {
+      display: block;
+      margin: auto;
+      background-color: #fefefe;
+    }
+
+    #mensaje {
+      font-weight: bold;
+      margin-top: 10px;
+      color: red;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Bienvenido a Motricidad Activa</h1>
-            <p>Selecciona tu modo de ejercicio:</p>
-        </header>
-        
-        <div class="options">
-            <button id="virtual-btn" class="option-btn">
-                <div class="icon">🎮</div>
-                <span>Modo Virtual (Juegos)</span>
-            </button>
-            
-            <button id="non-virtual-btn" class="option-btn">
-                <div class="icon">💪</div>
-                <span>Modo No Virtual (Ejercicios)</span>
-            </button>
-        </div>
+  <div class="container">
+    <h1>Ejercicios de Motricidad</h1>
+    <p>¿Cómo deseas practicar hoy?</p>
+    <div class="options">
+      <button onclick="mostrarEjercicios('virtual')">Ejercicios Virtuales</button>
+      <button onclick="mostrarEjercicios('no-virtual')">Ejercicios No Virtuales</button>
     </div>
 
-    <script src="js/main.js"></script>
-</body>
-</html>
+    <div id="contenido"></div>
+  </div>
+
+  <script src="app.js"></script>
