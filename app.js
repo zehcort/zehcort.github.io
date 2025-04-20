@@ -443,6 +443,7 @@ function iniciarUnirPuntos() {
     let linea = null;
 
     svg.addEventListener("pointerdown", function(e) {
+      e.preventDefault(); // evita el scroll
       const target = e.target;
       if (target.tagName === "circle" && +target.getAttribute("data-index") === actual + 1) {
         const cx = +target.getAttribute("cx");
@@ -458,22 +459,26 @@ function iniciarUnirPuntos() {
 
         svg.appendChild(linea);
 
-        function mover(e) {
-          const pt = svg.createSVGPoint();
-          pt.x = e.clientX || e.touches?.[0].clientX;
-          pt.y = e.clientY || e.touches?.[0].clientY;
-          const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
+        function mover(ev) {
+          ev.preventDefault();
+          const rect = svg.getBoundingClientRect();
+          const clientX = ev.clientX ?? ev.touches?.[0].clientX;
+          const clientY = ev.clientY ?? ev.touches?.[0].clientY;
+
+          const svgX = clientX - rect.left;
+          const svgY = clientY - rect.top;
 
           if (linea.points.length === 1) {
             linea.points.appendItem(svg.createSVGPoint());
           }
-          linea.points[1].x = svgP.x;
-          linea.points[1].y = svgP.y;
+          linea.points[1].x = svgX * (400 / rect.width);
+          linea.points[1].y = svgY * (400 / rect.height);
         }
 
-        function soltar(e) {
+        function soltar(ev) {
           svg.removeEventListener("pointermove", mover);
           svg.removeEventListener("pointerup", soltar);
+          svg.removeEventListener("pointercancel", soltar); // por si el gesto se interrumpe
 
           let siguienteIndex = actual + 2;
           const siguiente = svg.querySelector(`circle[data-index="${siguienteIndex}"]`);
@@ -526,6 +531,7 @@ function iniciarUnirPuntos() {
 
         svg.addEventListener("pointermove", mover);
         svg.addEventListener("pointerup", soltar);
+        svg.addEventListener("pointercancel", soltar);
       }
     });
   }
