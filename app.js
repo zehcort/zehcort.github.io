@@ -8,6 +8,7 @@ function mostrarEjercicios(tipo) {
     <div class="options">
       <button onclick="juego('camino')">🧠 Sigue el camino</button>
       <button onclick="juego('reaccion')">⚡ Reacción Rápida</button>
+      <button onclick="juego('unirPuntos')">🔗 Une los Puntos</button>
     </div>
   `;
   } else if (tipo === "no-virtual") {
@@ -112,6 +113,16 @@ function juego(tipo) {
       </div>
     `;
     iniciarReaccionContinua();
+  } else if (tipo === 'unirPuntos') {
+    contenido.innerHTML = `
+      <div id="juegoUnirPuntos">
+        <h2>🔗 Une los Puntos</h2>
+        <div id="contenedorSVG" style="width:100%; max-width:400px; height:400px; margin:auto;"></div>
+        <p id="mensajeUnir" style="text-align:center; font-weight:bold;"></p>
+        <button onclick="volverAlMenu()" style="margin-top:20px;">Volver al menú</button>
+      </div>
+    `;
+    iniciarUnirPuntos();
   }
 }
 
@@ -326,6 +337,202 @@ function comenzarCiclo() {
     puedeReaccionar = true;
   }, delay);
 }
+
+function iniciarUnirPuntos() {
+  const svgContainer = document.getElementById("contenedorSVG");
+  const mensaje = document.getElementById("mensajeUnir");
+
+  // Mostrar instrucciones solo si no existen
+  const instruccionesId = "instruccionesUnir";
+  if (!document.getElementById(instruccionesId)) {
+    const instrucciones = document.createElement("div");
+    instrucciones.id = instruccionesId;
+    instrucciones.style.textAlign = "center";
+    instrucciones.style.marginBottom = "10px";
+
+    const textoNivel = document.createElement("p");
+    textoNivel.id = "textoNivel";
+    textoNivel.style.margin = "0";
+    textoNivel.style.fontWeight = "bold";
+
+    const textoInstrucciones = document.createElement("p");
+    textoInstrucciones.style.margin = "0";
+    textoInstrucciones.textContent = "🧠 Une los puntos en orden (1 → 2 → 3...) y termina regresando al punto 1";
+
+    instrucciones.appendChild(textoNivel);
+    instrucciones.appendChild(textoInstrucciones);
+    svgContainer.parentNode.insertBefore(instrucciones, svgContainer);
+  }
+
+  let nivel = 1;
+  const nivelMax = 5;
+
+  function generarPuntosAleatorios(cantidad) {
+    const puntos = [];
+    const distanciaMinima = 30;
+
+    for (let i = 0; i < cantidad; i++) {
+      let valido = false;
+      let x, y;
+
+      while (!valido) {
+        x = 50 + Math.random() * 300;
+        y = 50 + Math.random() * 300;
+
+        valido = true;
+        for (const [px, py] of puntos) {
+          const distancia = Math.hypot(x - px, y - py);
+          if (distancia < distanciaMinima) {
+            valido = false;
+            break;
+          }
+        }
+      }
+
+      puntos.push([x, y]);
+    }
+
+    return puntos;
+  }
+
+  function dibujarNivel() {
+    const puntosPorNivel = [5, 8, 12, 15, 20];
+    const cantidadPuntos = puntosPorNivel[nivel - 1];
+    const puntos = generarPuntosAleatorios(cantidadPuntos);
+
+    document.getElementById("textoNivel").textContent = `Nivel ${nivel}`;
+
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("height", "100%");
+    svg.setAttribute("viewBox", "0 0 400 400");
+    svg.style.background = "#f9f9f9";
+
+    svgContainer.innerHTML = "";
+    svgContainer.appendChild(svg);
+
+    const circles = [];
+    const texts = [];
+
+
+    puntos.forEach((p, i) => {
+      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circle.setAttribute("cx", p[0]);
+      circle.setAttribute("cy", p[1]);
+      circle.setAttribute("r", 10);
+      circle.setAttribute("fill", "#2196F3");
+      circle.setAttribute("data-index", i + 1);
+      circles.push(circle);
+
+      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      text.setAttribute("x", p[0]);
+      text.setAttribute("y", p[1] + 4);
+      text.setAttribute("text-anchor", "middle");
+      text.setAttribute("font-size", "12");
+      text.setAttribute("fill", "#fff");
+      text.setAttribute("pointer-events", "none");
+      text.style.userSelect = "none";
+      text.textContent = i + 1;
+      texts.push(text);
+    });
+
+    circles.forEach(c => svg.appendChild(c));
+    texts.forEach(t => svg.appendChild(t));
+
+    let actual = 0;
+    let linea = null;
+
+    svg.addEventListener("pointerdown", function(e) {
+      const target = e.target;
+      if (target.tagName === "circle" && +target.getAttribute("data-index") === actual + 1) {
+        const cx = +target.getAttribute("cx");
+        const cy = +target.getAttribute("cy");
+
+        linea = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+        linea.setAttribute("fill", "none");
+        linea.setAttribute("stroke", "#4CAF50");
+        linea.setAttribute("stroke-width", 4);
+        linea.points.appendItem(svg.createSVGPoint());
+        linea.points[0].x = cx;
+        linea.points[0].y = cy;
+
+        svg.appendChild(linea);
+
+        function mover(e) {
+          const pt = svg.createSVGPoint();
+          pt.x = e.clientX || e.touches?.[0].clientX;
+          pt.y = e.clientY || e.touches?.[0].clientY;
+          const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
+
+          if (linea.points.length === 1) {
+            linea.points.appendItem(svg.createSVGPoint());
+          }
+          linea.points[1].x = svgP.x;
+          linea.points[1].y = svgP.y;
+        }
+
+        function soltar(e) {
+          svg.removeEventListener("pointermove", mover);
+          svg.removeEventListener("pointerup", soltar);
+
+          let siguienteIndex = actual + 2;
+          const siguiente = svg.querySelector(`circle[data-index="${siguienteIndex}"]`);
+
+          if (!siguiente && actual === puntos.length - 1) {
+            const primer = svg.querySelector(`circle[data-index="1"]`);
+            const dx = primer.cx.baseVal.value - linea.points[1].x;
+            const dy = primer.cy.baseVal.value - linea.points[1].y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+
+            if (dist < 20) {
+              mensaje.textContent = "✅ Nivel completado";
+              nivel++;
+              if (nivel > nivelMax) {
+                mensaje.textContent = "🎉 ¡Felicidades! Completaste todos los niveles.";
+              } else {
+                setTimeout(() => {
+                  mensaje.textContent = "";
+                  dibujarNivel();
+                }, 1000);
+              }
+            } else {
+              mensaje.textContent = "❌ Termina regresando al punto 1";
+              setTimeout(() => {
+                mensaje.textContent = "";
+                dibujarNivel();
+              }, 1000);
+            }
+            return;
+          }
+
+          if (siguiente) {
+            const dx = siguiente.cx.baseVal.value - linea.points[1].x;
+            const dy = siguiente.cy.baseVal.value - linea.points[1].y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+
+            if (dist < 20) {
+              actual++;
+              linea.points[1].x = siguiente.cx.baseVal.value;
+              linea.points[1].y = siguiente.cy.baseVal.value;
+            } else {
+              mensaje.textContent = "❌ Intenta de nuevo";
+              setTimeout(() => {
+                mensaje.textContent = "";
+                dibujarNivel();
+              }, 1000);
+            }
+          }
+        }
+
+        svg.addEventListener("pointermove", mover);
+        svg.addEventListener("pointerup", soltar);
+      }
+    });
+  }
+
+  dibujarNivel();
+}
+
 
 function volverAlMenu() {
   const app = document.getElementById("app");
