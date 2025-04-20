@@ -67,3 +67,48 @@ canvas {
   color: red;
   text-align: center;
 }
+
+/* ==== Estilos para el juego "Presiona el Círculo" ==== */
+
+#juegoCirculosContainer {
+  position: relative;
+  width: 90vw;
+  max-width: 500px;
+  height: 70vh;
+  background: white;
+  border: 2px solid #333;
+  border-radius: 10px;
+  margin: 20px auto;
+  overflow: hidden;
+}
+
+.circle {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #4CAF50;
+  cursor: pointer;
+}
+
+#infoCirculos {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+#startCirculosBtn,
+#nextLevelCirculosBtn {
+  margin-top: 1rem;
+  padding: 10px 20px;
+  font-size: 1rem;
+  background: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#startCirculosBtn:hover,
+#nextLevelCirculosBtn:hover {
+  background: #0056b3;
+}

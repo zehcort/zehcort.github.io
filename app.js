@@ -9,6 +9,7 @@ function mostrarEjercicios(tipo) {
       <button onclick="juego('camino')">🧠 Sigue el camino</button>
       <button onclick="juego('reaccion')">⚡ Reacción Rápida</button>
       <button onclick="juego('unirPuntos')">🔗 Une los Puntos</button>
+      <button onclick="juego('presionarCirculos')">🔵 Presiona los Círculos</button>
     </div>
   `;
   } else if (tipo === "no-virtual") {
@@ -123,6 +124,16 @@ function juego(tipo) {
       </div>
     `;
     iniciarUnirPuntos();
+  } else if (tipo === 'presionarCirculos') {  // Nuevo bloque
+    contenido.innerHTML = `
+      <div id="juegoPresionarCirculos">
+        <h2>🔵 Presiona los Círculos</h2>
+        <div id="contenedorCirculos" style="width:100%; max-width:400px; height:400px; margin:auto; position:relative;"></div>
+        <p id="mensajeCirculos" style="text-align:center; font-weight:bold;"></p>
+        <button onclick="volverAlMenu()" style="margin-top:20px;">Volver al menú</button>
+      </div>
+    `;
+    iniciarPresionarCirculos();
   }
 }
 
@@ -538,6 +549,149 @@ function iniciarUnirPuntos() {
 
   dibujarNivel();
 }
+
+function iniciarPresionarCirculos() {
+  const contenedor = document.getElementById("contenedorCirculos");
+  const mensaje = document.getElementById("mensajeCirculos");
+  const nivelElemento = document.createElement("h3");
+  const instruccion = document.createElement("p");
+  const contadorElemento = document.createElement("p");
+
+  contenedor.innerHTML = '';
+  contenedor.appendChild(nivelElemento);
+  contenedor.appendChild(instruccion);
+  contenedor.appendChild(contadorElemento);
+
+  let nivel = 1;
+  let puntosAciertos = 0;
+  let maxPuntos = 5;
+  let tiempoRestante = 20; // 🔧 Cambiado de 30 a 20 segundos
+  let timer;
+  let temporizadorElemento;
+  let intervaloGeneracion;
+
+  function actualizarNivel() {
+    nivelElemento.textContent = `Nivel ${nivel}`;
+    instruccion.textContent = `Presiona ${maxPuntos} círculos antes de que el tiempo se agote. ¡Buena suerte!`;
+    contadorElemento.textContent = `Círculos presionados: ${puntosAciertos} / ${maxPuntos}`;
+  }
+
+  function generarCirculo() {
+    const radio = 30 - (nivel - 1) * 5;
+    
+    // 🔧 Asegurar que los círculos no se generen sobre los textos
+    const textosAltura = contenedor.scrollTop + contadorElemento.offsetTop + contadorElemento.offsetHeight;
+    const x = Math.random() * (contenedor.offsetWidth - radio * 2) + radio;
+    const y = Math.random() * (contenedor.offsetHeight - textosAltura - radio * 2) + textosAltura + radio;
+
+    const circulo = document.createElement("div");
+
+    circulo.style.position = "absolute";
+    circulo.style.width = `${radio * 2}px`;
+    circulo.style.height = `${radio * 2}px`;
+    circulo.style.backgroundColor = "#2196F3";
+    circulo.style.borderRadius = "50%";
+    circulo.style.left = `${x}px`;
+    circulo.style.top = `${y}px`;
+    circulo.style.userSelect = "none";
+
+    circulo.addEventListener("click", () => {
+      if (contenedor.contains(circulo)) {
+        contenedor.removeChild(circulo);
+        puntosAciertos++;
+        contadorElemento.textContent = `Círculos presionados: ${puntosAciertos} / ${maxPuntos}`;
+        
+        if (puntosAciertos === maxPuntos) {
+          clearInterval(timer);
+          clearInterval(intervaloGeneracion);
+          setTimeout(() => {
+            if (nivel < 5) {
+              nivel++;
+              maxPuntos += 2;
+              generarNivel();
+            } else {
+              mensaje.textContent = "¡Felicidades! Has completado todos los niveles.";
+              mensaje.style.color = "green";
+            }
+          }, 500);
+        }
+      }
+    });
+
+    contenedor.appendChild(circulo);
+
+    setTimeout(() => {
+      if (contenedor.contains(circulo)) {
+        contenedor.removeChild(circulo);
+      }
+    }, 2000);
+  }
+
+  function iniciarTemporizador() {
+    if (temporizadorElemento) {
+      contenedor.removeChild(temporizadorElemento);
+    }
+
+    temporizadorElemento = document.createElement("p");
+    temporizadorElemento.style.textAlign = "center";
+    contenedor.appendChild(temporizadorElemento);
+
+    timer = setInterval(() => {
+      if (tiempoRestante > 0) {
+        tiempoRestante--;
+        temporizadorElemento.textContent = `Tiempo restante: ${tiempoRestante}s`;
+      } else {
+        clearInterval(timer);
+        clearInterval(intervaloGeneracion);
+        temporizadorElemento.textContent = `¡Tiempo agotado!`;
+        mensaje.textContent = "El tiempo se ha agotado. ¡Intenta de nuevo!";
+        mensaje.style.color = "red";
+        setTimeout(resetNivel, 1000);
+      }
+    }, 1000);
+  }
+
+  function resetNivel() {
+    clearInterval(timer);
+    clearInterval(intervaloGeneracion);
+    
+    nivel = 1;
+    maxPuntos = 5;
+    puntosAciertos = 0;
+    tiempoRestante = 20;
+
+    contenedor.innerHTML = "";
+    mensaje.textContent = "";
+
+    contenedor.appendChild(nivelElemento);
+    contenedor.appendChild(instruccion);
+    contenedor.appendChild(contadorElemento);
+
+    setTimeout(() => {
+      generarNivel();
+    }, 100);
+  }
+
+  function generarNivel() {
+    puntosAciertos = 0;
+    tiempoRestante = 20;
+    actualizarNivel();
+    iniciarTemporizador();
+
+    if (intervaloGeneracion) {
+      clearInterval(intervaloGeneracion);
+    }
+
+    setTimeout(() => {
+      intervaloGeneracion = setInterval(() => {
+        generarCirculo();
+      }, 1000);
+    }, 100);
+  }
+
+  generarNivel();
+}
+
 
 
 function volverAlMenu() {
