@@ -258,7 +258,7 @@ function iniciarJuegoCamino() {
   canvas.addEventListener("touchmove", manejarMovimiento, { passive: true });
 }
 
-let reaccionTimeout, esperando = false, tiempoInicio, juegoActivo = false;
+let reaccionTimeout, esperando = false, tiempoInicio, juegoActivo = false, puedeReaccionar = false;
 
 function iniciarReaccionContinua() {
   const pantalla = document.getElementById("pantallaReaccion");
@@ -266,12 +266,14 @@ function iniciarReaccionContinua() {
   pantalla.textContent = "Presiona para comenzar";
   esperando = false;
   juegoActivo = false;
+  puedeReaccionar = false;
 
   pantalla.onclick = () => {
     if (!esperando && !juegoActivo) {
       juegoActivo = true;
       comenzarCiclo();
-    } else if (esperando) {
+    } else if (esperando && puedeReaccionar) {
+      // Reacción correcta
       const ahora = new Date().getTime();
       const tiempoReaccion = ahora - tiempoInicio;
 
@@ -279,10 +281,24 @@ function iniciarReaccionContinua() {
       pantalla.style.backgroundColor = "#2196F3"; // Azul
 
       esperando = false;
+      puedeReaccionar = false;
 
       setTimeout(() => {
         comenzarCiclo();
-      }, 1000);
+      }, 1500);
+    } else if (!puedeReaccionar && juegoActivo) {
+      // Clic antes de tiempo
+      clearTimeout(reaccionTimeout);
+      pantalla.style.backgroundColor = "#ff4d4d"; // Rojo
+      pantalla.style.color = "white";
+      pantalla.textContent = "¡Muy pronto! 😅";
+
+      esperando = false;
+
+      setTimeout(() => {
+        pantalla.style.color = ""; // restaurar color
+        comenzarCiclo();
+      }, 2000);
     }
   };
 }
@@ -290,7 +306,6 @@ function iniciarReaccionContinua() {
 function comenzarCiclo() {
   const pantalla = document.getElementById("pantallaReaccion");
 
-  // Cancelar timeout anterior si existe
   if (reaccionTimeout) {
     clearTimeout(reaccionTimeout);
     reaccionTimeout = null;
@@ -299,14 +314,16 @@ function comenzarCiclo() {
   pantalla.textContent = "Espera...";
   pantalla.style.backgroundColor = "lightgray";
   esperando = false;
+  puedeReaccionar = false;
 
-  const delay = Math.floor(Math.random() * 3000) + 2000;
+  const delay = Math.random() * (4000 - 1500) + 1500;
 
   reaccionTimeout = setTimeout(() => {
     pantalla.style.backgroundColor = "#4CAF50";
     pantalla.textContent = "¡Haz clic ahora!";
     tiempoInicio = new Date().getTime();
     esperando = true;
+    puedeReaccionar = true;
   }, delay);
 }
 
