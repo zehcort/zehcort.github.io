@@ -30,10 +30,11 @@ function mostrarMotricidad(tipo) {
   if (tipo === "gruesa") {
     subcontenido.innerHTML = `
       <h3>Ejercicios de Motricidad Gruesa</h3>
+      <p style="text-align: justify;">La motricidad gruesa involucra los movimientos de los músculos grandes del cuerpo, como caminar, correr, saltar y mantener el equilibrio. Estos ejercicios ayudan a fortalecer el cuerpo y mejorar la coordinación.</p>
       <ul>
         <li>🏃 Caminar en línea recta con los ojos cerrados</li>
         <li>🦶 Saltar en un pie y luego en el otro</li>
-            <li>⚽ Atrapa y esquiva la pelota</li>
+        <li>⚽ Atrapa y esquiva la pelota</li>
         <li>📦 Levanta objetos del suelo</li>
         <li>🚧 Esquiva obstáculos</li>
         <li>🧘 Haz ejercicios de equilibrio</li>
@@ -55,13 +56,13 @@ function mostrarMotricidad(tipo) {
           <li>🥎 Padel</li>
           <li>🏈 Fútbol americano</li>
           <li>🎯 Otros deportes</li>
-      </ul>
-    </ul>
+        </ul>
       </ul>
     `;
   } else if (tipo === "fina") {
     subcontenido.innerHTML = `
       <h3>Ejercicios de Motricidad Fina</h3>
+      <p style="text-align: justify;">La motricidad fina se refiere a los movimientos precisos y controlados de las manos, dedos y muñeca. Estos ejercicios ayudan a mejorar la destreza manual y la coordinación.</p>
       <ul>
         <li>🖐 Toca cada dedo con el pulgar (mano derecha y luego izquierda)</li>
         <li>✏️ Traza líneas con un lápiz entre dos puntos sin salirse</li>
@@ -85,7 +86,6 @@ function mostrarMotricidad(tipo) {
     `;
   }
 }
-
 
 function juego(tipo) {
   if (tipo === 'camino') {
@@ -556,6 +556,7 @@ function iniciarPresionarCirculos() {
   const nivelElemento = document.createElement("h3");
   const instruccion = document.createElement("p");
   const contadorElemento = document.createElement("p");
+  const botonReiniciar = document.createElement("button"); // 🔹 Nuevo botón
 
   contenedor.innerHTML = '';
   contenedor.appendChild(nivelElemento);
@@ -565,10 +566,26 @@ function iniciarPresionarCirculos() {
   let nivel = 1;
   let puntosAciertos = 0;
   let maxPuntos = 5;
-  let tiempoRestante = 20; // 🔧 Cambiado de 30 a 20 segundos
+  let tiempoRestante = 20;
   let timer;
   let temporizadorElemento;
   let intervaloGeneracion;
+
+  // 🔹 Estilo inicial del botón de reiniciar
+  botonReiniciar.textContent = "Volver a intentar";
+  botonReiniciar.style.display = "none";
+  botonReiniciar.style.marginTop = "10px";
+  botonReiniciar.style.padding = "8px 16px";
+  botonReiniciar.style.fontSize = "16px";
+  botonReiniciar.style.cursor = "pointer";
+  contenedor.appendChild(botonReiniciar);
+
+  // Agregar el evento para "Volver a intentar"
+  botonReiniciar.addEventListener("click", () => {
+    botonReiniciar.style.display = "none";
+    mensaje.textContent = "";
+    resetNivel();
+  });
 
   function actualizarNivel() {
     nivelElemento.textContent = `Nivel ${nivel}`;
@@ -578,8 +595,6 @@ function iniciarPresionarCirculos() {
 
   function generarCirculo() {
     const radio = 30 - (nivel - 1) * 5;
-    
-    // 🔧 Asegurar que los círculos no se generen sobre los textos
     const textosAltura = contenedor.scrollTop + contadorElemento.offsetTop + contadorElemento.offsetHeight;
     const x = Math.random() * (contenedor.offsetWidth - radio * 2) + radio;
     const y = Math.random() * (contenedor.offsetHeight - textosAltura - radio * 2) + textosAltura + radio;
@@ -634,6 +649,7 @@ function iniciarPresionarCirculos() {
 
     temporizadorElemento = document.createElement("p");
     temporizadorElemento.style.textAlign = "center";
+    temporizadorElemento.style.fontSize = "20px"; // Tamaño normal para "Tiempo restante"
     contenedor.appendChild(temporizadorElemento);
 
     timer = setInterval(() => {
@@ -643,10 +659,32 @@ function iniciarPresionarCirculos() {
       } else {
         clearInterval(timer);
         clearInterval(intervaloGeneracion);
-        temporizadorElemento.textContent = `¡Tiempo agotado!`;
-        mensaje.textContent = "El tiempo se ha agotado. ¡Intenta de nuevo!";
+
+        // Reemplazar el texto de "Tiempo agotado" por un emoji más pequeño
+        temporizadorElemento.textContent = "⏳"; // Emoji de reloj de arena
+
+        // Hacer el emoji un tercio de su tamaño original
+        temporizadorElemento.style.fontSize = "67px"; // Reducido a un tercio del tamaño original
+        temporizadorElemento.style.position = "absolute";
+        temporizadorElemento.style.left = "50%";
+        temporizadorElemento.style.top = "50%";
+        temporizadorElemento.style.transform = "translate(-50%, -50%)"; // Centrar el emoji en la pantalla
+
+        // 🔴 Eliminar todos los círculos del contenedor
+        const todosLosCirculos = contenedor.querySelectorAll("div");
+        todosLosCirculos.forEach(circulo => {
+          contenedor.removeChild(circulo);
+        });
+
+        // Cambiar los textos al perder el juego
+        nivelElemento.textContent = "¡Has perdido!";
+        instruccion.textContent = "El tiempo se ha agotado. Para volver a jugar, regresa al menú principal.";
+        contadorElemento.textContent = ""; // Eliminar la cuenta de círculos
+        mensaje.textContent = "Vuelve al menú principal para comenzar un nuevo juego.";
         mensaje.style.color = "red";
-        setTimeout(resetNivel, 1000);
+
+        // Ocultar el botón de reiniciar
+        botonReiniciar.style.display = "none";
       }
     }, 1000);
   }
@@ -660,15 +698,22 @@ function iniciarPresionarCirculos() {
     puntosAciertos = 0;
     tiempoRestante = 20;
 
-    contenedor.innerHTML = "";
-    mensaje.textContent = "";
-
+    // Reestablecer el contenedor y mostrar los elementos iniciales
+    contenedor.innerHTML = '';
     contenedor.appendChild(nivelElemento);
     contenedor.appendChild(instruccion);
     contenedor.appendChild(contadorElemento);
+    contenedor.appendChild(botonReiniciar); // Volver a agregar el botón (aunque esté oculto)
+    
+    // Reiniciar el temporizador y la generación de círculos
+    actualizarNivel();
+    iniciarTemporizador();
 
+    // Asegurarse de que los círculos se generen de nuevo
     setTimeout(() => {
-      generarNivel();
+      intervaloGeneracion = setInterval(() => {
+        generarCirculo();
+      }, 1000);
     }, 100);
   }
 
@@ -691,8 +736,6 @@ function iniciarPresionarCirculos() {
 
   generarNivel();
 }
-
-
 
 function volverAlMenu() {
   const app = document.getElementById("app");
