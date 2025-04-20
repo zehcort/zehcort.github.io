@@ -5,10 +5,10 @@ function mostrarEjercicios(tipo) {
   contenido.innerHTML = `
     <h2>Ejercicios Virtuales (Motricidad fina)</h2>
     <p>Selecciona un tipo de juego para comenzar:</p>
-    <ul>
-      <li><button onclick="juego('camino')">🧠 Sigue el camino</button></li>
-      <li><button onclick="juego('reaccion')">⚡ Reacción Rápida</button></li>
-    </ul>
+    <div class="options">
+      <button onclick="juego('camino')">🧠 Sigue el camino</button>
+      <button onclick="juego('reaccion')">⚡ Reacción Rápida</button>
+    </div>
   `;
   } else if (tipo === "no-virtual") {
     contenido.innerHTML = `
